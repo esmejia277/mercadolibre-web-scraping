@@ -19,9 +19,6 @@ def fetch_data(url: str, number_of_pages: int) -> list:
         except Exception as error:
             print("Error: ", str(error), "URL: ", url, "\n" )
 
-        if page.status != 200:
-            break
-
         html_bytes = page.read()
         html = html_bytes.decode("utf-8")
 
