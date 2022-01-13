@@ -1,7 +1,6 @@
-import json
+import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-
 
 def fetch_data(url: str, number_of_pages: int) -> list:
 
@@ -51,58 +50,14 @@ def fetch_data(url: str, number_of_pages: int) -> list:
     return products
 
 
-def lambda_handler(event, context):
-    
-    # check http method here. POST or GET
+if __name__ == "__main__":
 
-    url = event.get('url')
-    number_of_pages = event.get('number_of_pages')
-    
-    if not url or not number_of_pages:
-        return {
-            'statusCode': 400,
-            'body': json.dumps({
-                    'msg': {
-                        'url': 'Please enter an mercadolibre url. (Search the product in the webpage and copy and paste the url). Example: https://listado.mercadolibre.com.co/mouse#D[A:mouse]',
-                        'number_of_pages': 'Please enter how many pages do you want to fetch'
-                    }
-                })
-        }
-    
-
-
-    try:
-        # fetch data from mercadolibre
-        print('Fetching ...')        
-        products = fetch_data(
-            url = url,
-            number_of_pages = 1
-        )
-    except Exception as error:
-        print('Error: ', error)
-        return json.dumps({
-            'msg': 'An error occurred, please verify your URL'
-        })
-
-    
-
-    if not products:
-        return {
-            'statusCode': 404,
-            'body': json.dumps({
-                    'msg': 'No data'
-                })
-        }
-
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({
-            "response": products
-        })
-    }
-
-
+    products = fetch_data(
+        url = "https://listado.mercadolibre.com.co/macbooks",
+        number_of_pages = 1
+    )
+    print(products)
+    df_data = pd.DataFrame(data = products)
+    df_data.to_excel("./products.xlsx")
+    print(df_data)
         
